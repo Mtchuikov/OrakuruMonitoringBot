@@ -21,15 +21,16 @@ bot = Bot(
     token=TGBOTTOKEN,
     parse_mode=types.ParseMode.HTML
 )
+
 dp = Dispatcher(
     bot=bot,
     storage=MemoryStorage()
 )
 
-def leaderboard():
+def make_leaderboard_text_entry():
     counter, text = 0, ''
 
-    for row in get_all_rows(ValidatorsInfo):
+    for row in get_all_rows(ValidatorTemportaryDataTable):
         counter += 1
 
         address = row.address[0:4] + '...' + row.address[-5:-1]
@@ -39,7 +40,7 @@ def leaderboard():
                                   row.responses, round(row.response_time, 2))
         )
         if counter % 3 == 0:
-            add_leaderboard_note(text)
+            paste_row(LeaderboardTable, text)
             text = ''
 
 
@@ -55,10 +56,10 @@ async def show_main_menu(message: types.Message):
 
 
 @dp.callback_query_handler(lambda CallbackQuery: CallbackQuery.data == 'show_leaderboard')
-async def show_validator(call: CallbackQuery):
+async def print_leaderboard(call: CallbackQuery):
     message = call.message
 
-    note = (get_row_by_id(table=PrintLeaderboard,note_id=1)).text
+    note = (get_row_by_id(table=LeaderboardTable,note_id=1)).text
 
     await gather(
         message.edit_text(
@@ -66,6 +67,7 @@ async def show_validator(call: CallbackQuery):
         ),
         Page.note_id.set()
     )
+    
 
 @dp.callback_query_handler(state=Page.note_id)
 async def switch_leaderboard_page_(call: CallbackQuery, state: FSMContext):
@@ -78,7 +80,7 @@ async def switch_leaderboard_page_(call: CallbackQuery, state: FSMContext):
 
         if len(await state.get_data()) == 0:
             note_id = 2
-            note = (get_row_by_id(PrintLeaderboard, note_id)).text
+            note = (get_row_by_id(LeaderboardTable, note_id)).text
 
             await gather(
                 message.edit_text(
@@ -89,9 +91,9 @@ async def switch_leaderboard_page_(call: CallbackQuery, state: FSMContext):
 
         else:
             note_id = note_id + 1
-            note = (get_row_by_id(PrintLeaderboard, note_id)).text
+            note = (get_row_by_id(LeaderboardTable, note_id)).text
 
-            if note_id == get_rows_count(PrintLeaderboard):
+            if note_id == get_rows_count(LeaderboardTable):
                 keyboard = switch_leaderboard_back_page
             else:
                 keyboard = switch_leaderboard_page
@@ -105,7 +107,7 @@ async def switch_leaderboard_page_(call: CallbackQuery, state: FSMContext):
 
     elif callback_data == 'back_leaderboard_page':
         note_id = note_id - 1
-        note = (get_row_by_id(PrintLeaderboard, note_id)).text
+        note = (get_row_by_id(LeaderboardTable, note_id)).text
 
         if note_id == 1:
             keyboard = switch_leaderboard_next_page
@@ -140,6 +142,7 @@ async def check_validator(call: CallbackQuery, state: FSMContext):
         state.update_data(message_data=message_data)
     )
 
+
 @dp.callback_query_handler(state=EnterAddress)
 @dp.message_handler(state=EnterAddress)
 async def print_validator_stats(data: types.Message or CallbackQuery, state: FSMContext):
@@ -155,7 +158,7 @@ async def print_validator_stats(data: types.Message or CallbackQuery, state: FSM
         message_ = (await state.get_data()).get('message_data')
 
         address = message.text
-        stats = get_row_by_address(ValidatorsInfo, address)
+        stats = get_row_by_address(ValidatorTemportaryDataTable, address)
 
         if not stats:
             await gather(

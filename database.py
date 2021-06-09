@@ -38,14 +38,14 @@ def get_rows_count(table: object) -> int:
 
 
 def add_validator_stats_note(json_response: list) -> None:
-    table = ValidatorDataTable
+    table = ValidatorTemportaryDataTable
 
     if get_rows_count(table) != 0:
         delete_all_rows(table)
 
     for json_string in json_response:
         paste_row(
-            ValidatorDataTable,
+            ValidatorTemportaryDataTable,
             address=json_string['address'],
             score=json_string['score'],
             response_time=json_string['response_time'],
@@ -63,7 +63,6 @@ class ValidatorTemportaryDataTable(Base):
     score = Column(Integer)
     response_time = Column(Float)
     responses = Column(Integer)
-
 
 class ValidatorStaticDataTable(Base):
     __tablename__ = 'validator_data_static'
@@ -85,7 +84,6 @@ class ValidatorStaticDataTable(Base):
     weekly_stake_changes = Column(Float)
     monthly_stake_changes = Column(Float)
     
-
 class LeaderboardTable(Base):
     __tablename__ = 'leaderboard'
     
