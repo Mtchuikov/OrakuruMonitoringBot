@@ -2,8 +2,8 @@ from aiogram.types import (
     InlineKeyboardMarkup, InlineKeyboardButton
 )
 
-main_menu = InlineKeyboardMarkup(row_width=1)
-main_menu.add(
+MainMenuKeyboard = InlineKeyboardMarkup(row_width=1)
+MainMenuKeyboard.add(
     InlineKeyboardButton(
         text='🌸 Sakura',
         callback_data='show_leaderboard'
@@ -14,53 +14,47 @@ main_menu.add(
         )
 )
 
-switch_leaderboard_page = InlineKeyboardMarkup(row_width=2)
-switch_leaderboard_page.add(
-    InlineKeyboardButton(
-        text='🡸',
-        callback_data='back_leaderboard_page',
-    ),
-    InlineKeyboardButton(
-        text='🡺',
-        callback_data='next_leaderboard_page'
-    ),
-    InlineKeyboardButton(
-        text='🏠',
-        callback_data='back_to_menu'
-    )
-)
 
-switch_leaderboard_next_page = InlineKeyboardMarkup(row_width=1)
-switch_leaderboard_next_page.add(
-    InlineKeyboardButton(
-        text='🡺',
-        callback_data='next_leaderboard_page'
-    ),
-    InlineKeyboardButton(
-        text='🏠',
-        callback_data='back_to_menu'
-    )
-)
+def TurnLeaderboardPageKeyboard(note_id: int, *last_note_id: int) -> object:
+    TurnLeaderboardPageKeyboard = InlineKeyboardMarkup(row_width=2)
 
-switch_leaderboard_back_page = InlineKeyboardMarkup(row_width=1)
-switch_leaderboard_back_page.add(
-    InlineKeyboardButton(
-        text='🡸',
-        callback_data='back_leaderboard_page'
-    ),
-    InlineKeyboardButton(
-        text='🏠',
-        callback_data='back_to_menu'
-    )
-)
+    if note_id == 1:
+        TurnLeaderboardPageKeyboard.add(
+            InlineKeyboardButton(
+                text='🡺',
+                callback_data='next_leaderboard_page'
+            )
+        )
 
-home_button = InlineKeyboardMarkup(row_width=1)
-home_button.add(
-    InlineKeyboardButton(
-        text='🏠',
-        callback_data='back_to_menu'
+    elif note_id == last_note_id:
+        TurnLeaderboardPageKeyboard.add(
+            InlineKeyboardButton(
+                text='🡸', 
+                callback_data='back_leaderboard_page'
+            )
+        )
+
+    else:
+        TurnLeaderboardPageKeyboard.add(
+            InlineKeyboardButton(
+                text='🡸',
+                callback_data='back_leaderboard_page',
+            ),
+            InlineKeyboardButton(
+                text='🡺',
+                callback_data='next_leaderboard_page'
+            )
+        )
+
+    TurnLeaderboardPageKeyboard.add(
+        InlineKeyboardButton(
+            text='🏠',
+            callback_data='back_to_menu'
+        )
     )
-)
+
+    return TurnLeaderboardPageKeyboard
+
 
 paste_validator_address_again = InlineKeyboardMarkup(row_width=1)
 paste_validator_address_again.add(

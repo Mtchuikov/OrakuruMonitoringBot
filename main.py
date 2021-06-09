@@ -9,12 +9,9 @@ from aiogram.types.callback_query import CallbackQuery
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from states import *
-from aiogram.utils.markdown import *
-import multiprocessing
 
 
 TGBOTTOKEN = '1772648354:AAHY2m9QBzXtGVCmzPrdDSCABGjG22hyIz8'
-
 
 
 bot = Bot(
@@ -46,35 +43,32 @@ def make_leaderboard_text_entry():
 
 @dp.message_handler(commands=['start'])
 async def show_main_menu(message: types.Message):
-    # json = await request_get(
-    #     url='https://leaderboard.orakuru.io/stats',return_json=True
-    # )
-    # add_validator_stats_note(json)
     await message.answer(
-        text=welcome_message, reply_markup=main_menu
+        text=welcome_message, reply_markup=MainMenuKeyboard
     )
 
 
 @dp.callback_query_handler(lambda CallbackQuery: CallbackQuery.data == 'show_leaderboard')
-async def print_leaderboard(call: CallbackQuery):
+async def show_leaderboard_page(call: CallbackQuery):
     message = call.message
 
-    note = (get_row_by_id(table=LeaderboardTable,note_id=1)).text
+    note_text = (get_row_by_id(table=LeaderboardTable, note_id=1)).text
 
     await gather(
         message.edit_text(
-            text=note, reply_markup=switch_leaderboard_next_page
+            text=note_text, reply_markup=TurnLeaderboardPageKeyboard(1)
         ),
-        Page.note_id.set()
+        statePage.note_id.set()
     )
     
 
-@dp.callback_query_handler(state=Page.note_id)
-async def switch_leaderboard_page_(call: CallbackQuery, state: FSMContext):
+@dp.callback_query_handler(state=statePage.note_id)
+async def turn_leaderboard_page(call: CallbackQuery, state: FSMContext):
 
     message = call.message
     callback_data = call.data
     note_id = (await state.get_data()).get('page')
+    last_note_id = get_rows_count(LeaderboardTable)
 
     if callback_data == 'next_leaderboard_page':
 
@@ -84,39 +78,29 @@ async def switch_leaderboard_page_(call: CallbackQuery, state: FSMContext):
 
             await gather(
                 message.edit_text(
-                    text=note, reply_markup=switch_leaderboard_page
+                    text=note, reply_markup=TurnLeaderboardPageKeyboard
                 ),
                 state.update_data(page=2)
             )
 
         else:
-            note_id = note_id + 1
+            note_id += 1
             note = (get_row_by_id(LeaderboardTable, note_id)).text
-
-            if note_id == get_rows_count(LeaderboardTable):
-                keyboard = switch_leaderboard_back_page
-            else:
-                keyboard = switch_leaderboard_page
 
             await gather(
                 message.edit_text(
-                    text=note, reply_markup=keyboard
+                    text=note, reply_markup=TurnLeaderboardPageKeyboard(note_id, last_note_id)
                 ),
                 state.update_data(page=note_id)
             )
 
     elif callback_data == 'back_leaderboard_page':
-        note_id = note_id - 1
+        note_id -= 1
         note = (get_row_by_id(LeaderboardTable, note_id)).text
-
-        if note_id == 1:
-            keyboard = switch_leaderboard_next_page
-        else:
-            keyboard = switch_leaderboard_page
 
         await gather(
             message.edit_text(
-                text=note, reply_markup=keyboard
+                text=note, reply_markup=TurnLeaderboardPageKeyboard(note_id, last_note_id)
             ),
             state.update_data(page=note_id)
         )
@@ -124,7 +108,7 @@ async def switch_leaderboard_page_(call: CallbackQuery, state: FSMContext):
     elif callback_data == 'back_to_menu':
         await gather(
             message.edit_text(
-                text=welcome_message, reply_markup=main_menu
+                text=welcome_message, reply_markup=Main
             ),
             state.finish()
         )
@@ -138,18 +122,18 @@ async def check_validator(call: CallbackQuery, state: FSMContext):
         text="Paste validator's address", reply_markup=home_button
     )
     await gather(
-        EnterAddress.address.set(),
+        stateEnterAddress.address.set(),
         state.update_data(message_data=message_data)
     )
 
 
-@dp.callback_query_handler(state=EnterAddress)
-@dp.message_handler(state=EnterAddress)
+@dp.callback_query_handler(state=stateEnterAddress)
+@dp.message_handler(state=stateEnterAddress)
 async def print_validator_stats(data: types.Message or CallbackQuery, state: FSMContext):
     if isinstance(data, CallbackQuery):
         await gather(
             data.message.edit_text(
-                text=welcome_message, reply_markup=main_menu
+                text=welcome_message, reply_markup=MainMenuKeyboard
             ),
             state.finish()
         )
