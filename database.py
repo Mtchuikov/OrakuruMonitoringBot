@@ -1,18 +1,18 @@
 import os
-
-import sqlalchemy
-from sqlalchemy import Table, Column, MetaData, create_engine, String, Integer, Float
+from sqlalchemy import (Table, Column, MetaData, String, 
+                        Integer, Float, create_engine)
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import mapper
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession
-
-
-DATABASE_NAME = 'orakuru' + '.db'
+from config import DATABASE_NAME
 
 
 def paste_row(table, **fields):
     session.add(table(**fields))
+    session.commit()
+
+
+def delete_rows(table: object):
+    session.query(table).delete()
     session.commit()
 
 
@@ -32,16 +32,13 @@ def get_rows_count(table: object) -> int:
     return session.query(table).count()
 
 
-def delete_data_from_table(table: object):
-    session.query(table).delete()
-    session.commit()
 
 
 def add_validator_stats_note(json_response: list) -> None:
     table = ValidatorsInfo
 
     if get_rows_count(table) != 0:
-        delete_data_from_table(table)
+        delete_rows(table)
 
     for json_string in json_response:
         paste_row(
@@ -51,6 +48,7 @@ def add_validator_stats_note(json_response: list) -> None:
             response_time=json_string['response_time'],
             responses=json_string['responses']
         )
+
 
 metadata = MetaData()
 
@@ -62,6 +60,13 @@ validators_info = Table('validators_info', metadata,
                         Column('responses', Integer)
                         )
 
+print_leaderboard = Table('print_leaderboard', metadata,
+                          Column('id', Integer, primary_key=True, autoincrement=True),
+                          Column('text', String)
+                          )
+
+
+
 class ValidatorsInfo(object):
 
     def __init__(
@@ -72,19 +77,13 @@ class ValidatorsInfo(object):
         self.response_time = response_time
         self.responses = responses
 
-mapper(ValidatorsInfo, validators_info)
-
-
-print_leaderboard = Table('print_leaderboard', metadata,
-                          Column('id', Integer, primary_key=True, autoincrement=True),
-                          Column('text', String)
-                          )
-
 class PrintLeaderboard(object):
 
     def __init__(self, text):
         self.text = text
 
+
+mapper(ValidatorsInfo, validators_info)
 mapper(PrintLeaderboard, print_leaderboard)
 
 
