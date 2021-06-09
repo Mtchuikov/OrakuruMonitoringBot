@@ -11,7 +11,7 @@ from aiogram.dispatcher import FSMContext
 from states import *
 
 
-TGBOTTOKEN = '1772648354:AAHY2m9QBzXtGVCmzPrdDSCABGjG22hyIz8'
+TGBOTTOKEN = ''
 
 
 bot = Bot(
