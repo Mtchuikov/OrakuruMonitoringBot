@@ -1,8 +1,8 @@
 import os
-from sqlalchemy import (Table, Column, MetaData, String, 
-                        Integer, Float, create_engine)
+from sqlalchemy import (Column, String, Integer, 
+                        Float, create_engine)
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import mapper
 from config import DATABASE_NAME
 
 
@@ -32,17 +32,15 @@ def get_rows_count(table: object) -> int:
     return session.query(table).count()
 
 
-
-
 def add_validator_stats_note(json_response: list) -> None:
-    table = ValidatorsInfo
+    table = ValidatorDataTable
 
     if get_rows_count(table) != 0:
         delete_rows(table)
 
     for json_string in json_response:
         paste_row(
-            ValidatorsInfo,
+            ValidatorDataTable,
             address=json_string['address'],
             score=json_string['score'],
             response_time=json_string['response_time'],
@@ -50,46 +48,28 @@ def add_validator_stats_note(json_response: list) -> None:
         )
 
 
-metadata = MetaData()
+Base = declarative_base()
 
-validators_info = Table('validators_info', metadata,
-                        Column('id', Integer, primary_key=True, autoincrement=True),
-                        Column('address', String),
-                        Column('score', Integer),
-                        Column('response_time', Float),
-                        Column('responses', Integer)
-                        )
-
-print_leaderboard = Table('print_leaderboard', metadata,
-                          Column('id', Integer, primary_key=True, autoincrement=True),
-                          Column('text', String)
-                          )
+class ValidatorDataTable(Base):
+    __tablename__ = 'validator_data_temporary'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    address = Column('address', String)
+    score = Column(Integer)
+    response_time = Column(Float)
+    responses = Column(Integer)
 
 
-
-class ValidatorsInfo(object):
-
-    def __init__(
-            self, address, score, response_time, responses
-    ):
-        self.address = address
-        self.score = score
-        self.response_time = response_time
-        self.responses = responses
-
-class PrintLeaderboard(object):
-
-    def __init__(self, text):
-        self.text = text
-
-
-mapper(ValidatorsInfo, validators_info)
-mapper(PrintLeaderboard, print_leaderboard)
+class LeaderboardTable(Base):
+    __tablename__ = 'leaderboard'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    text = Column(String)
 
 
 engine = create_engine('sqlite:///%s' %DATABASE_NAME)
 session = sessionmaker(bind=engine)()
 
 
-if not os.getcwd() + '\\%s' %DATABASE_NAME in os.listdir():
-    metadata.create_all(engine)
+if not os.path.exists(DATABASE_NAME):
+    Base.metadata.create_all(engine)
