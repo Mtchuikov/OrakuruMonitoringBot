@@ -27,7 +27,7 @@ dp = Dispatcher(
 def make_leaderboard_text_entry():
     counter, text = 0, ''
 
-    for row in get_all_rows(ValidatorTemportaryDataTable):
+    for row in validator_temportary_table.get_all_rows():
         counter += 1
 
         address = row.address[0:4] + '...' + row.address[-5:-1]
@@ -37,7 +37,7 @@ def make_leaderboard_text_entry():
                                   row.responses, round(row.response_time, 2))
         )
         if counter % 3 == 0:
-            paste_row(LeaderboardTable, text)
+            leaderboard_table.paste_row(text)
             text = ''
 
 
@@ -52,7 +52,7 @@ async def show_main_menu(message: types.Message):
 async def show_leaderboard_page(call: CallbackQuery):
     message = call.message
 
-    note_text = (get_row_by_id(table=LeaderboardTable, note_id=1)).text
+    note_text = (leaderboard_table.get_row_by_id(note_id=1)).text
 
     await gather(
         message.edit_text(
@@ -64,17 +64,17 @@ async def show_leaderboard_page(call: CallbackQuery):
 
 @dp.callback_query_handler(state=statePage.note_id)
 async def turn_leaderboard_page(call: CallbackQuery, state: FSMContext):
-
     message = call.message
     callback_data = call.data
+
     note_id = (await state.get_data()).get('page')
-    last_note_id = get_rows_count(LeaderboardTable)
+    last_note_id = leaderboard_table.get_rows_count()
 
     if callback_data == 'next_leaderboard_page':
 
         if len(await state.get_data()) == 0:
             note_id = 2
-            note = (get_row_by_id(LeaderboardTable, note_id)).text
+            note = (leaderboard_table.get_row_by_id(note_id)).text
 
             await gather(
                 message.edit_text(
@@ -85,7 +85,7 @@ async def turn_leaderboard_page(call: CallbackQuery, state: FSMContext):
 
         else:
             note_id += 1
-            note = (get_row_by_id(LeaderboardTable, note_id)).text
+            note = (leaderboard_table.get_row_by_id(note_id)).text
 
             await gather(
                 message.edit_text(
@@ -96,7 +96,7 @@ async def turn_leaderboard_page(call: CallbackQuery, state: FSMContext):
 
     elif callback_data == 'back_leaderboard_page':
         note_id -= 1
-        note = (get_row_by_id(LeaderboardTable, note_id)).text
+        note = (leaderboard_table.get_row_by_id(note_id)).text
 
         await gather(
             message.edit_text(
@@ -108,7 +108,7 @@ async def turn_leaderboard_page(call: CallbackQuery, state: FSMContext):
     elif callback_data == 'back_to_menu':
         await gather(
             message.edit_text(
-                text=welcome_message, reply_markup=Main
+                text=welcome_message, reply_markup=MainMenuKeyboard
             ),
             state.finish()
         )
@@ -119,7 +119,7 @@ async def check_validator(call: CallbackQuery, state: FSMContext):
     message = call.message
 
     message_data = await message.edit_text(
-        text="Paste validator's address", reply_markup=home_button
+        text="Paste validator's address", reply_markup=BackHomeKeyboard
     )
     await gather(
         stateEnterAddress.address.set(),
@@ -142,12 +142,12 @@ async def print_validator_stats(data: types.Message or CallbackQuery, state: FSM
         message_ = (await state.get_data()).get('message_data')
 
         address = message.text
-        stats = get_row_by_address(ValidatorTemportaryDataTable, address)
+        stats = validator_temportary_table.get_row_by_address(address)
 
         if not stats:
             await gather(
                 message.delete(),
-                message_.edit_text(text=no_data % address, reply_markup=paste_validator_address_again)
+                message_.edit_text(text=no_data % address, reply_markup=SearchValidatorAgainKeyboard)
             )
         else:
             address = address[0:4] + '...' + address[-5:-1]
@@ -158,7 +158,7 @@ async def print_validator_stats(data: types.Message or CallbackQuery, state: FSM
                 message_.edit_text(
                     text=validator_stats % (rank, address, score,
                                             responses, round(response_time, 2)),
-                    reply_markup=home_button
+                    reply_markup=BackHomeKeyboard
                 )
             )
 

@@ -1,56 +1,41 @@
 import os
-from re import T
+import re
 from sqlalchemy import (Column, String, Integer, 
                         Float, create_engine)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import load_only, sessionmaker
 from config import DATABASE_NAME
 
 
-def paste_row(table, **fields):
-    session.add(table(**fields))
-    session.commit()
+class TableMethods:
 
+    def __init__(self, Table: object, session: sessionmaker):
+        self.__session = session
+        self.__query = self.__session.query(Table)
 
-def delete_all_rows(table: object):
-    session.query(table).delete()
-    session.commit()
+    def paste_row(self, **fields):
+        session.add(self.__table(**fields))
+        session.commit()
 
+    def delete_all_rows(self):
+        self.__query.delete()
+        self.__session.commit()
 
-def delete_row_by_address(table: object, address: str):
-    session.query(table).filter_by(address=address).delete()
+    def delete_row_by_address(self, address: str):
+        self.__query.filter_by(address=address).delete()
+        self.__session.commit()
 
+    def get_all_rows(self) -> tuple:
+        return self.__query.all()
 
-def get_all_rows(table: object) -> tuple:
-    return session.query(table).all()
+    def get_row_by_address(self, address: str) -> (object or None):
+        return self.__query.filter_by(address=address).first()
 
+    def get_row_by_id(self, note_id: int) -> (object or None):
+        return self.__query.get(note_id)
 
-def get_row_by_address(table: object, address: str) -> (object or None):
-    return session.query(table).filter_by(address=address).first()
-
-
-def get_row_by_id(table: object, note_id: int) -> (object or None):
-    return session.query(table).get(note_id)
-
-
-def get_rows_count(table: object) -> int:
-    return session.query(table).count()
-
-
-def add_validator_stats_note(json_response: list) -> None:
-    table = ValidatorTemportaryDataTable
-
-    if get_rows_count(table) != 0:
-        delete_all_rows(table)
-
-    for json_string in json_response:
-        paste_row(
-            ValidatorTemportaryDataTable,
-            address=json_string['address'],
-            score=json_string['score'],
-            response_time=json_string['response_time'],
-            responses=json_string['responses']
-        )
+    def get_rows_count(self) -> int:
+        return self.__query.count()
 
 
 Base = declarative_base()
@@ -91,9 +76,15 @@ class LeaderboardTable(Base):
     text = Column(String)
 
 
-engine = create_engine('sqlite:///%s' %DATABASE_NAME)
+engine = create_engine('sqlite:///%s' %DATABASE_NAME, echo=True)
 session = sessionmaker(bind=engine)()
+
+
+validator_temportary_table = TableMethods(ValidatorTemportaryDataTable, session)
+validator_static_table = TableMethods(ValidatorStaticDataTable, session)
+leaderboard_table = TableMethods(LeaderboardTable, session)
 
 
 if not os.path.exists(DATABASE_NAME):
     Base.metadata.create_all(engine)
+    
