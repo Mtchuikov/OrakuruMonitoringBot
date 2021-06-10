@@ -56,8 +56,16 @@ def TurnLeaderboardPageKeyboard(note_id: int, *last_note_id: int) -> object:
     return TurnLeaderboardPageKeyboard
 
 
-paste_validator_address_again = InlineKeyboardMarkup(row_width=1)
-paste_validator_address_again.add(
+BackHomeKeyboard = InlineKeyboardMarkup(row_width=1)
+BackHomeKeyboard.add(
+    InlineKeyboardButton(
+        text='🏠',
+        callback_data='back_to_menu'
+    )
+)
+
+SearchValidatorAgainKeyboard = InlineKeyboardMarkup(row_width=1)
+SearchValidatorAgainKeyboard.add(
     InlineKeyboardButton(
         text='Yes',
         callback_data='try_again'

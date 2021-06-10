@@ -1,6 +1,6 @@
 import os
 import re
-from sqlalchemy import (Column, String, Integer, 
+from sqlalchemy import (Column, String, Integer,
                         Float, create_engine)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import load_only, sessionmaker
@@ -9,13 +9,18 @@ from config import DATABASE_NAME
 
 class TableMethods:
 
-    def __init__(self, Table: object, session: sessionmaker):
+    def __init__(self, Table: object(), session: sessionmaker()):
+        self.__table = Table
         self.__session = session
         self.__query = self.__session.query(Table)
 
     def paste_row(self, **fields):
-        session.add(self.__table(**fields))
-        session.commit()
+        self.__session.add(self.__table(**fields))
+        self.__session.commit()
+
+    def paste_all_rows(self, fields):
+        self.__session.add_all(fields)
+        self.__session.commit()
 
     def delete_all_rows(self):
         self.__query.delete()
@@ -40,18 +45,20 @@ class TableMethods:
 
 Base = declarative_base()
 
+
 class ValidatorTemportaryDataTable(Base):
     __tablename__ = 'validator_data_temporary'
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     address = Column(String, unique=True)
     score = Column(Integer)
     response_time = Column(Float)
     responses = Column(Integer)
 
+
 class ValidatorStaticDataTable(Base):
     __tablename__ = 'validator_data_static'
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     address = Column(String, unique=True)
     comission = Column(Integer)
@@ -68,23 +75,22 @@ class ValidatorStaticDataTable(Base):
     daily_stake_changes = Column(Float)
     weekly_stake_changes = Column(Float)
     monthly_stake_changes = Column(Float)
-    
+
+
 class LeaderboardTable(Base):
     __tablename__ = 'leaderboard'
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     text = Column(String)
 
 
-engine = create_engine('sqlite:///%s' %DATABASE_NAME, echo=True)
+engine = create_engine('sqlite:///%s' % DATABASE_NAME, echo=True)
 session = sessionmaker(bind=engine)()
-
 
 validator_temportary_table = TableMethods(ValidatorTemportaryDataTable, session)
 validator_static_table = TableMethods(ValidatorStaticDataTable, session)
 leaderboard_table = TableMethods(LeaderboardTable, session)
 
-
 if not os.path.exists(DATABASE_NAME):
     Base.metadata.create_all(engine)
-    
+
