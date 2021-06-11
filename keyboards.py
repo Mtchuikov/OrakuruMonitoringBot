@@ -68,7 +68,7 @@ SearchValidatorAgainKeyboard = InlineKeyboardMarkup(row_width=1)
 SearchValidatorAgainKeyboard.add(
     InlineKeyboardButton(
         text='Yes',
-        callback_data='try_again'
+        callback_data='try_find_validator_again'
     ),
     InlineKeyboardButton(
         text='No',
