@@ -1,11 +1,14 @@
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
-class stateEnterAddress(StatesGroup):
+
+class SetValidatorAddress(StatesGroup):
     address = State()
     message_data = State()
 
-class statePage(StatesGroup):
+
+class Page(StatesGroup):
     note_id = State()
 
-class stateBackToMenu(StatesGroup):
+
+class BackToMenu(StatesGroup):
     back = State()
