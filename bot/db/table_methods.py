@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from .base import session
 
 from .models import ValidatorTemporaryDataTable, ValidatorStaticDataTable, LeaderboardTable

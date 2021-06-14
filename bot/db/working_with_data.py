@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
 import asyncio
 
 from bot.network_methods import request_get
 from bot.ans_templates import LeaderboardNote
 
-from .table_methods import temporary_data, static_data, leaderboard
+from .table_methods import temporary_data, leaderboard
 
 
 async def update_temporary_data():
@@ -37,6 +39,6 @@ async def update_temporary_data():
 
         temporary_data.commit()
 
-        await asyncio.sleep(15)
+        await asyncio.sleep(120)
 
 # async def make_leaderboard_text_entry():

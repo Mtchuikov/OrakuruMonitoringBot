@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 
 TOKEN = '1816191459:AAGY2Gn0bwmtX_StMUOYMX1gulwa1GEquKo'

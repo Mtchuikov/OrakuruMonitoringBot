@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 WelcomeMessage = 'You are welcome, samurai 🐙'
 
 AskAddress = 'Samurai 🐙, enter validators address\nto get information about it'
