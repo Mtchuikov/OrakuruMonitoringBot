@@ -1,7 +1,7 @@
 import asyncio
 
 from bot.network_methods import request_get
-from bot.ans_templates import ValidatorStatistic
+from bot.ans_templates import LeaderboardNote
 
 from .table_methods import temporary_data, static_data, leaderboard
 
@@ -20,21 +20,23 @@ async def update_temporary_data():
 
         temporary_data.commit()
 
-        await asyncio.sleep(10)
+        counter = 0; text = ''
 
+        leaderboard.delete_all_rows()
 
-async def make_leaderboard_text_entry():
-    counter = 0; text = ''
+        for row in temporary_data.get_all_rows():
+            counter += 1
 
-    leaderboard.delete_all_rows()
+            short_address = row.address[0:4] + '...' + row.address[-5:-1]
+            text = text + LeaderboardNote % (counter, row.address ,short_address, row.score, row.responses, round(row.response_time, 2))
 
-    for row in temporary_data.get_all_rows():
-        counter += 1
+            if counter % 3 == 0:
+                print(text)
+                leaderboard.paste_row(text=text)
+                text = ''
 
-        address = row.address[0:4] + '...' + row.address[-5:-1]
-        text = text + ValidatorStatistic % (counter, address, row.score, row.responses, round(row.response_time, 2))
+        temporary_data.commit()
 
-        if counter % 3 == 0:
-            print(text)
-            leaderboard.paste_row(text=text)
-            text = ''
+        await asyncio.sleep(15)
+
+# async def make_leaderboard_text_entry():

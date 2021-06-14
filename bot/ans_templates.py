@@ -1,23 +1,25 @@
 WelcomeMessage = 'You are welcome, samurai 🐙'
 
+AskAddress = 'Samurai 🐙, enter validators address\nto get information about it'
+
+ValidatorNotFound = "Sorry Samurai 🐙, we can't find\na validator with specified address"
+
 ValidatorStatistic = (
-    '\n┌ Rank: %s\n'
-    '├─ Validator <b>%s</b>\n'
-    '├─── Score: %s\n'
-    '├─── Total responses: %s\n'
-    '└─── Response time: %s\n'
-    '\t\t\n\nPage number: 1'
-)
-
-leaderboard_page = (
-    'Leaderboard\n Page %s/%s'
+    'Samurai 🐙, validator information\nreceived successfully\n\n'
     '┌ Rank: %s\n'
-    '├─ Validator <b>%s</b>\n'
+    '├─ Validator <a href="https://testnet.bscscan.com/address/%s"><b>%s</b></a>\n'
     '├─── Score: %s\n'
     '├─── Total responses: %s\n'
     '└─── Response time: %s\n'
-    '\t\t\n\nPage number: 1'
 )
 
-no_data = "We can't find a validator with this address: %s\nTry again?"
+LeaderboardNote = (
+    '\n┌ Rank: %s\n'
+    '├─ Validator <a href="https://testnet.bscscan.com/address/%s"><b>%s</b></a>\n'
+    '├─── Score: %s\n'
+    '├─── Total responses: %s\n'
+    '└─── Response time: %s\n'
+)
+
+
 

@@ -49,7 +49,5 @@ class TableMethods:
 
 
 temporary_data = TableMethods(table=ValidatorTemporaryDataTable)
-
 static_data = TableMethods(table=ValidatorStaticDataTable)
-
 leaderboard = TableMethods(table=LeaderboardTable)

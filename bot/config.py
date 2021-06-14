@@ -1,6 +1,6 @@
 import os
 
-TOKEN = '1772648354:AAHY2m9QBzXtGVCmzPrdDSCABGjG22hyIz8'
+TOKEN = '1816191459:AAGY2Gn0bwmtX_StMUOYMX1gulwa1GEquKo'
 
 DATABASE_NAME = 'orakuru' + '.db'
 

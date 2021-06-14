@@ -15,13 +15,13 @@ MainMenuKeyboard.add(
 )
 
 
-def TurnLeaderboardPageKeyboard(note_id: int, *last_note_id: int) -> object:
+def TurnLeaderboardPageKeyboard(note_id: int, last_note_id: int) -> object:
     TurnLeaderboardPageKeyboard = InlineKeyboardMarkup(row_width=2)
-
+    print(note_id, last_note_id)
     if note_id == 1:
         TurnLeaderboardPageKeyboard.add(
             InlineKeyboardButton(
-                text='🡺',
+                text='➡',
                 callback_data='next_leaderboard_page'
             )
         )
@@ -29,7 +29,7 @@ def TurnLeaderboardPageKeyboard(note_id: int, *last_note_id: int) -> object:
     elif note_id == last_note_id:
         TurnLeaderboardPageKeyboard.add(
             InlineKeyboardButton(
-                text='🡸', 
+                text='⬅',
                 callback_data='back_leaderboard_page'
             )
         )
@@ -37,11 +37,11 @@ def TurnLeaderboardPageKeyboard(note_id: int, *last_note_id: int) -> object:
     else:
         TurnLeaderboardPageKeyboard.add(
             InlineKeyboardButton(
-                text='🡸',
+                text='⬅',
                 callback_data='back_leaderboard_page',
             ),
             InlineKeyboardButton(
-                text='🡺',
+                text='➡',
                 callback_data='next_leaderboard_page'
             )
         )
@@ -60,18 +60,18 @@ BackHomeKeyboard = InlineKeyboardMarkup(row_width=1)
 BackHomeKeyboard.add(
     InlineKeyboardButton(
         text='🏠',
-        callback_data='back_to_menu'
+        callback_data='menu'
     )
 )
 
 SearchValidatorAgainKeyboard = InlineKeyboardMarkup(row_width=1)
 SearchValidatorAgainKeyboard.add(
     InlineKeyboardButton(
-        text='Yes',
+        text='🔄',
         callback_data='try_find_validator_again'
     ),
     InlineKeyboardButton(
-        text='No',
+        text='🏠',
         callback_data='back_to_menu'
     )
 )
