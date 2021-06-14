@@ -22,7 +22,8 @@ async def update_temporary_data():
 
         temporary_data.commit()
 
-        counter = 0; text = ''
+        counter = 0
+        text = ''
 
         leaderboard.delete_all_rows()
 
