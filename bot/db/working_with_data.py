@@ -31,14 +31,15 @@ async def update_temporary_data():
             counter += 1
 
             short_address = row.address[0:4] + '...' + row.address[-5:-1]
-            text = text + LeaderboardNote % (counter, row.address ,short_address, row.score, row.responses, round(row.response_time, 2))
+            text = text + LeaderboardNote % (
+                counter, row.address, short_address, row.score, row.responses, round(row.response_time, 2))
 
             if counter % 3 == 0:
                 print(text)
                 leaderboard.paste_row(text=text)
                 text = ''
 
-        temporary_data.commit()
+        leaderboard.commit()
 
         await asyncio.sleep(120)
 

@@ -40,3 +40,11 @@ class LeaderboardTable(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     text = Column(String)
+
+
+class UsernameNode(Base):
+    __tablename__ = 'username_node'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String, unique=True)
+    address = Column(String, unique=True)
