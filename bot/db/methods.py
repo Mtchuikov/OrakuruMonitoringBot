@@ -3,8 +3,9 @@
 from sqlalchemy.orm import sessionmaker
 
 
-def wrapped_methods(wrapped_models: tuple, session: sessionmaker()) -> tuple:
-    return [Methods(model, session) for model in wrapped_models]
+def wrapped_methods(wrapped_models: tuple, wrapped_username_models: tuple, session: sessionmaker()) -> list:
+    return [Methods(model, session) for model in wrapped_models] +\
+           [MethodsWithUsername(model, session) for model in wrapped_username_models]
 
 
 class Methods:
@@ -51,4 +52,17 @@ class Methods:
     def get_rows_count(self) -> int:
         return self.__query.count()
 
-        
+
+
+class MethodsWithUsername(Methods):
+    def __init__(self, table: object(), session: sessionmaker()):
+        super().__init__(table, session)
+        self.__table = table
+        self.__session = session
+        self.__query = self.__session.query(table)
+
+    def get_row_by_username(self, username: str) -> (object or None):
+        return self.__query.filter_by(username=username).first()
+
+    def delete_row_by_username(self, username: str) -> None:
+        self.__query.filter_by(username=username).delete()

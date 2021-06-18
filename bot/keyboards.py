@@ -7,7 +7,7 @@ class Keyboard:
 
 
     @staticmethod
-    def main_menu():
+    def main_menu() -> InlineKeyboardMarkup:
         keyboard = InlineKeyboardMarkup(row_width=1)
         keyboard.add(
             InlineKeyboardButton(text='🌸 Sakura', callback_data='leaderboard'),
@@ -27,7 +27,7 @@ class Keyboard:
 
 
     @staticmethod
-    def switch_page(note_id: int, last_note_id: int) -> object:
+    def switch_page(note_id: int, last_note_id: int) -> InlineKeyboardMarkup:
         keyboard = InlineKeyboardMarkup(row_width=2)
 
         if note_id == 1:

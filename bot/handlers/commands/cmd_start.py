@@ -4,11 +4,11 @@ from aiogram import Dispatcher
 from aiogram.types import Message
 
 from ...message_templates import WelcomeMessage
-from ...keyboards import MainMenuKeyboard
+from ...keyboards import Keyboard
 
 
 async def cmd_start(message: Message):
-    await message.answer(text=WelcomeMessage, reply_markup=MainMenuKeyboard)
+    await message.answer(text=WelcomeMessage, reply_markup=Keyboard.main_menu())
 
 
 def register_start_cmd(dp: Dispatcher):

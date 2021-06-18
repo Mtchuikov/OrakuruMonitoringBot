@@ -45,6 +45,16 @@ def wrapped_models(Base: declarative_base):
         text = Column(String)
 
 
-    return ValidatorTemporary, ValidatorStatic, Leaderboard
+    class UsernameNode(Base):
+        __tablename__ = 'username_node'
 
+        id = Column(Integer, primary_key=True, autoincrement=True)
+        username = Column(String, unique=True)
+        address = Column(String, unique=True)
+
+
+    return {'ValidatorTemporary': ValidatorTemporary,
+            'ValidatorStatic': ValidatorStatic,
+            'Leaderboard': Leaderboard,
+            'UsernameNode': UsernameNode}
     

@@ -15,7 +15,8 @@ class Config:
     db_name: str = field(default='orakuru.db')
 
     def __post_init__(self):
-        self.database_path = os.path.dirname(os.path.abspath(__file__)) + '\\' + self.db_name
+        self.database_path = os.path.dirname(os.path.abspath(__file__)) + '/' + self.db_name
+        print(self.database_path)
 
         self.bot = Bot(self.bot_token, parse_mode=types.ParseMode.HTML)
         self.dp = Dispatcher(self.bot)

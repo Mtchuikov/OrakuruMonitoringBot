@@ -10,10 +10,10 @@ from bot.handlers.callbacks.cb_leaderboard import register_leaderboard_callbacks
 from bot.handlers.callbacks.cb_validator_info import register_validator_callback
 from bot.db.working_with_data import update_temporary_data
 
-from config import TOKEN
+from config import cfg
 
 
-bot = Bot(token=TOKEN, parse_mode=types.ParseMode.HTML)
+bot = Bot(token=cfg.bot_token, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot=bot, storage=MemoryStorage())
 
 
