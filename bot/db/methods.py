@@ -3,7 +3,7 @@
 from sqlalchemy.orm import Session
 
 
-def wrapped_methods(wrapped_models: tuple, session: Session) -> tuple:
+def wrapped_methods(wrapped_models: tuple, session: Session) -> list:
     return [Methods(model, session) for model in wrapped_models]
 
 

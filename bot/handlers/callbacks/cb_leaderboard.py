@@ -16,7 +16,11 @@ from ...keyboards import Keyboard
 async def leaderboard_page(call: CallbackQuery):
     last_note_id = leaderboard.get_rows_count()
 
-    note_text = (leaderboard.get_row_by_id(note_id=1)).text
+    try:
+        note_text = (leaderboard.get_row_by_id(note_id=1)).text
+    except Exception as e:
+        print(f'WARN: {e}')
+        note_text = ''
     text_response = 'Leaderboard. Page %s/%s\n' % (1, last_note_id) + note_text
 
     await gather(

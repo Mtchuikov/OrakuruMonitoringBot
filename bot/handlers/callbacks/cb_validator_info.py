@@ -8,7 +8,7 @@ from aiogram.dispatcher import FSMContext
 
 from ..states import SetValidatorAddress
 
-from ...db.controller import validator_static, username_node
+from ...db.controller import validator_static, validator_by_user_id
 from ...keyboards import Keyboard
 from ...message_templates import message
 
@@ -20,15 +20,15 @@ async def check_validator(call: CallbackQuery, state: FSMContext):
         )
     else:
         try:
-            username = call.from_user['username']
+            user_id = call.from_user['id']
         except Exception as e:
             print(f'WARN: {e}')
-            username = None
-        row_with_address = username_node.get_row_by_criteria({'username': username})
+            user_id = None
+        row_with_address = validator_by_user_id.get_row_by_criteria({'user_id': user_id})
 
         if call.data == 'repeat' and row_with_address:
             row_with_address = None
-            username_node.delete_row_by_criteria({'username': username})
+            validator_by_user_id.delete_row_by_criteria({'user_id': user_id})
 
         if not row_with_address:
             call_data = await call.message.edit_text(
@@ -75,10 +75,10 @@ async def show_new_validator(call: Message or CallbackQuery, state: FSMContext):
 
         else:
             response = generate_response(address, stats, call_)
-            username_node.paste_row({
-                'username': call_['chat']['username'], 'address': address
+            validator_by_user_id.paste_row({
+                'user_id': call_['chat']['id'], 'address': address
             })
-            username_node.commit()
+            validator_by_user_id.commit()
 
             await gather(call.delete(), response)
 
@@ -86,9 +86,9 @@ async def show_new_validator(call: Message or CallbackQuery, state: FSMContext):
 async def show_validator_stats(call: Message or CallbackQuery, state: FSMContext):
     call_: CallbackQuery.message = (await state.get_data()).get('message_data')
     print(call_)
-    username = call.from_user['username']
+    user_id = call.from_user['id']
 
-    row_with_address = username_node.get_row_by_criteria({'username': username})
+    row_with_address = validator_by_user_id.get_row_by_criteria({'user_id': user_id})
     if not row_with_address:
         await show_new_validator(call, state)
     else:

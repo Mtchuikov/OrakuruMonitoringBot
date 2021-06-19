@@ -17,7 +17,7 @@ session: Session = sessionmaker(bind=engine)()
 
 wrapped_models = wrapped_models(base)
 
-validator_static, leaderboard, username_node = wrapped_methods(wrapped_models, session)
+validator_static, leaderboard, validator_by_user_id = wrapped_methods(wrapped_models, session)
 
 if not os.path.exists(cfg.database_path):
     base.metadata.create_all(engine)

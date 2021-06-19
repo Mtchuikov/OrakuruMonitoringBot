@@ -36,11 +36,11 @@ def wrapped_models(Base: declarative_base):
         id = Column(Integer, primary_key=True, autoincrement=True)
         text = Column(String)
 
-    class UsernameNode(Base):
-        __tablename__ = 'username_node'
+    class ValidatorByUserId(Base):
+        __tablename__ = 'validator_by_user_id'
 
         id = Column(Integer, primary_key=True, autoincrement=True)
-        username = Column(String, unique=True)
+        user_id = Column(String, unique=True)
         address = Column(String, unique=True)
 
-    return ValidatorData, Leaderboard, UsernameNode
+    return ValidatorData, Leaderboard, ValidatorByUserId
