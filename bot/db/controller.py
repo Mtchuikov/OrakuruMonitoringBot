@@ -11,18 +11,13 @@ from .methods import wrapped_methods
 
 from config import cfg
 
-
 base = declarative_base()
 engine = create_engine(r'sqlite:///%s' % cfg.database_path)
-session: Session  = sessionmaker(bind=engine)()
+session: Session = sessionmaker(bind=engine)()
 
-models = wrapped_models(base)
-wrapped_username_models = tuple([models.pop('UsernameNode')])
-wrapped_models = tuple(models.values())
+wrapped_models = wrapped_models(base)
 
-validator_temporary, validator_static, leaderboard, username_node = wrapped_methods(wrapped_models, wrapped_username_models, session)
-
+validator_static, leaderboard, username_node = wrapped_methods(wrapped_models, session)
 
 if not os.path.exists(cfg.database_path):
     base.metadata.create_all(engine)
-

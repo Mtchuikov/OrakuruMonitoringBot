@@ -9,7 +9,7 @@ from aiogram.dispatcher import FSMContext
 from ..states import Page
 
 from ...db.controller import leaderboard
-from ...message_templates import WelcomeMessage
+from ...message_templates import Message
 from ...keyboards import Keyboard
 
 
@@ -40,8 +40,9 @@ async def turn_leaderboard_page(call: CallbackQuery, state: FSMContext):
             text_response = 'Leaderboard. Page %s/%s\n' % (current_note_id, last_note_id) + note_text
 
             response = call.message.edit_text(
-                    text=text_response, reply_markup=Keyboard.switch_page(current_note_id, last_note_id), disable_web_page_preview=True
-                )
+                text=text_response, reply_markup=Keyboard.switch_page(current_note_id, last_note_id),
+                disable_web_page_preview=True
+            )
 
             await gather(response, state.update_data(page=2))
 
@@ -52,8 +53,9 @@ async def turn_leaderboard_page(call: CallbackQuery, state: FSMContext):
             text_response = 'Leaderboard. Page %s/%s\n' % (current_note_id, last_note_id) + note_text
 
             response = call.message.edit_text(
-                    text=text_response, reply_markup=Keyboard.switch_page(current_note_id, last_note_id), disable_web_page_preview=True
-                )
+                text=text_response, reply_markup=Keyboard.switch_page(current_note_id, last_note_id),
+                disable_web_page_preview=True
+            )
 
             await gather(response, state.update_data(page=current_note_id))
 
@@ -64,13 +66,14 @@ async def turn_leaderboard_page(call: CallbackQuery, state: FSMContext):
         text_response = 'Leaderboard. Page %s/%s\n' % (current_note_id, last_note_id) + note_text
 
         response = call.message.edit_text(
-                text=text_response, reply_markup=Keyboard.switch_page(current_note_id, last_note_id), disable_web_page_preview=True
-            )
+            text=text_response, reply_markup=Keyboard.switch_page(current_note_id, last_note_id),
+            disable_web_page_preview=True
+        )
 
         await gather(response, state.update_data(page=current_note_id))
 
     elif call.data == 'home':
-        response = call.message.edit_text(text=WelcomeMessage, reply_markup=Keyboard.main_menu())
+        response = call.message.edit_text(text=Message.welcome, reply_markup=Keyboard.main_menu())
 
         await gather(response, state.finish())
 

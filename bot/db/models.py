@@ -5,8 +5,6 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 def wrapped_models(Base: declarative_base):
-
-
     class ValidatorData(Base):
         __tablename__ = 'validator_static'
 
@@ -32,13 +30,11 @@ def wrapped_models(Base: declarative_base):
         weekly_stake_changes = Column(Float)
         monthly_stake_changes = Column(Float)
 
-
     class Leaderboard(Base):
         __tablename__ = 'leaderboard'
 
         id = Column(Integer, primary_key=True, autoincrement=True)
         text = Column(String)
-
 
     class UsernameNode(Base):
         __tablename__ = 'username_node'
@@ -46,6 +42,5 @@ def wrapped_models(Base: declarative_base):
         id = Column(Integer, primary_key=True, autoincrement=True)
         username = Column(String, unique=True)
         address = Column(String, unique=True)
-    return ValidatorData, Leaderboard
 
-    
+    return ValidatorData, Leaderboard, UsernameNode
