@@ -3,18 +3,18 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from .methods import wrapped_methods
 from .models import wrapped_models
+from .methods import wrapped_methods
 
 from config import cfg
 
 
 base = declarative_base()
-engine = create_engine(r'sqlite:///%s' % cfg.database_path, echo=True)
-session = sessionmaker(bind=engine)()
+engine = create_engine(r'sqlite:///%s' % cfg.database_path)
+session: Session  = sessionmaker(bind=engine)()
 
 models = wrapped_models(base)
 wrapped_username_models = tuple([models.pop('UsernameNode')])

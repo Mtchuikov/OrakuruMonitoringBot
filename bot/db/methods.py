@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 
 
-def wrapped_methods(wrapped_models: tuple, wrapped_username_models: tuple, session: sessionmaker()) -> list:
-    return [Methods(model, session) for model in wrapped_models] +\
-           [MethodsWithUsername(model, session) for model in wrapped_username_models]
+def wrapped_methods(wrapped_models: tuple, session: Session) -> tuple:
+    return [Methods(model, session) for model in wrapped_models]
 
 
 class Methods:
 
 
-    def __init__(self, model: object(), session: sessionmaker()):
+    def __init__(self, model: object(), session: Session):
         self.__model = model
         self.__session = session
         self.__query = self.__session.query(model)
@@ -21,19 +20,36 @@ class Methods:
         self.__session.commit()
 
 
-    def paste_row(self, **fields):
-        self.__session.add(self.__model(**fields))
+    def paste_all_rows(self, *rows: dict):
+        self.__session.add_all(self.__model(**row) for row in rows)
 
 
-    def paste_all_rows(self, fields):
-        self.__session.add_all(fields)
+    def paste_row(self, row: dict):
+        self.__session.add(self.__model(**row))
+
+
+    def upgrade_row_by_criteria(self, row: dict, criteria: dict):
+        self.__query.filter_by(**criteria).update(row)
 
 
     def delete_all_rows(self):
         self.__query.delete()
 
 
-    def delete_row_by_address(self, address: str) -> int:
+    def delete_row_by_criteria(self, criteria: dict) -> int:
+        return self.__query.filter_by(**criteria).delete()
+
+
+    def get_all_rows(self) -> tuple or None:
+        return self.__query.all()
+
+
+    def get_row_by_criteria(self, criteria: dict) -> object or None:
+        return self.__query.filter_by(**criteria).first()
+
+
+    def get_rows_count(self) -> int:
+        return self.__query.count()
         return self.__query.filter_by(address=address).delete()
 
 
