@@ -3,24 +3,23 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from .methods import wrapped_methods
 from .models import wrapped_models
+from .methods import wrapped_methods
 
-from config import DATABASE_PATH
+from config import cfg
 
 
 base = declarative_base()
-engine = create_engine(r'sqlite:///%s' % DATABASE_PATH, echo=True)
-session = sessionmaker(bind=engine)()
+engine = create_engine(r'sqlite:///%s' % cfg.database_path)
+session: Session  = sessionmaker(bind=engine)()
 
 wrapped_models = wrapped_models(base)
 
-validator_temporary, validator_static, leaderboard = wrapped_methods(wrapped_models, session)
+validator_data, leaderboard = wrapped_methods(wrapped_models, session)
 
-
-if not os.path.exists(DATABASE_PATH):
+if not os.path.exists(cfg.database_path):
     base.metadata.create_all(engine)
 
