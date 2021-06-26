@@ -1,0 +1,3 @@
+SQLAlchemy==1.4.18
+aiohttp==3.7.4.post0
+aiogram==2.13
