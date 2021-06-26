@@ -54,6 +54,7 @@ async def update_leaderboard_table():
 
 async def update_data():
     while True:
+        await create_database()
         await update_validator_table()
         await update_leaderboard_table()
         await asyncio.sleep(120)
